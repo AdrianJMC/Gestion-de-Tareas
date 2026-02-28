@@ -1,0 +1,70 @@
+:root {
+    --primary: #4f46e5;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+    --card: #ffffff;
+}
+
+body {
+    background-color: var(--bg);
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+#app {
+    background: var(--card);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+h2 { color: #1e293b; text-align: center; margin-bottom: 1.5rem; }
+
+.input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+}
+
+input:focus { border-color: var(--primary); }
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover { opacity: 0.9; }
+
+.btn-delete {
+    background: #fee2e2;
+    color: var(--danger);
+    padding: 6px 12px;
+}
+
+.btn-delete:hover { background: var(--danger); color: white; }
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f1f5f9;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}

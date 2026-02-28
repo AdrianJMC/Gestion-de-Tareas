@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Persistence Tasker</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="app">
+        <h2>Gestión de Tareas</h2>
+
+        <div class="input-group">
+            <input v-model="newTaskText" @keyup.enter="addTask" placeholder="Nueva tarea..." :disabled="loading">
+            <button @click="addTask" :disabled="loading">Agregar</button>
+        </div>
+
+        <p v-if="loading" class="loading">Cargando tareas del servidor...</p>
+
+        <ul v-else>
+            <li v-for="task in tasks" :key="task.id" class="task-item">
+                {{ task.text }}
+                <button @click="deleteTask(task.id)">Eliminar</button>
+            </li>
+        </ul>
+
+        <p v-if="tasks.length === 0 && !loading">No hay tareas pendientes.</p>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const tasks = ref([]);
+                const newTaskText = ref('');
+                const loading = ref(true);
+                const API_URL = 'http://localhost:3005/tasks';
+
+                // Cargar tareas al iniciar (onMounted)
+                const fetchTasks = async () => {
+                    loading.value = true;
+                    try {
+                        const response = await fetch(API_URL);
+                        tasks.value = await response.json();
+                    } catch (error) {
+                        console.error("Error al cargar:", error);
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                // Agregar tarea (POST)
+                const addTask = async () => {
+                    if (!newTaskText.value.trim()) return;
+
+                    try {
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: newTaskText.value })
+                        });
+                        const newTask = await response.json();
+                        tasks.value.push(newTask); // Actualización reactiva del DOM
+                        newTaskText.value = '';
+                    } catch (error) {
+                        alert("Error al guardar la tarea");
+                    }
+                };
+
+                // Eliminar tarea (DELETE)
+                const deleteTask = async (id) => {
+                    try {
+                        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                        tasks.value = tasks.value.filter(t => t.id !== id); // Quitar del DOM
+                    } catch (error) {
+                        alert("No se pudo eliminar");
+                    }
+                };
+
+                onMounted(fetchTasks);
+
+                return { tasks, newTaskText, loading, addTask, deleteTask };
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>
